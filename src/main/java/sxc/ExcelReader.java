@@ -19,24 +19,18 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
-public class ExcelReader {
-	static List<TabelInfoVO> TabelInfoVO = new ArrayList<>();
+import sxc.mybatis.MySqlSQLBean;
 
-	
-	private static final int TableName_Index = 30;
-	private static final int INDEX_NAME = 2;
-	private static final int INDEX_DES = 12;
-	private static final int INDEX_TYPE = 22;
-	private static final int INDEX_LENGTH = 26;
-	private static final int INDEX_MUST = 29;
-	private static final int INDEX_PK = 31;
+public class ExcelReader {
+	static List<TabelInfoVO> tabelInfoVO = new ArrayList<>();
+
+	private static String packagename = "com.tes.ibatis.mapper";
+
 	private static final String FILE_PATH = "d:\\SQL\\";
 	private POIFSFileSystem fs;
 	private HSSFWorkbook wb;
 	private HSSFSheet sheet;
 	private HSSFRow row;
-
-	private static String packagename = "com.tes.ibatis.mapper";
 
 	public static void main(String[] args) throws IOException {
 		try {
@@ -56,19 +50,18 @@ public class ExcelReader {
 		ExcelReader excelReader = new ExcelReader();
 		InputStream is2 = new FileInputStream(one);
 		field.clear();
-		TabelInfoVO.clear();
+		tabelInfoVO.clear();
 		Map<Integer, String> map = excelReader.readExcelContent(is2);
-		String tableName = map.get(1).split(",")[TableName_Index];
-		String chinaName = map.get(5).split(",")[31];
+
+		String tableName = new TableCell(TabelInfoVO.TableName_Index_ROW, TabelInfoVO.TableName_Index, map).getValue();
+		String chinaName = new TableCell(TabelInfoVO.TableName_Index_ROW_CN, TabelInfoVO.TABLE_NAME_CN, map).getValue();
 		String[] a = null;
 		for (int i = 7; i <= map.size(); i++) {
 			a = map.get(i).split(",");
 			if (a.length > 0) {
-				field.add(a[INDEX_NAME]);
-				TabelInfoVO.add(new TabelInfoVO(a[INDEX_NAME], a[INDEX_DES],
-						a[INDEX_TYPE], a[INDEX_LENGTH], a[INDEX_MUST],
-						a[INDEX_PK]));
-
+				TabelInfoVO t = new TabelInfoVO(a);
+				field.add(t.getName().getValue());
+				tabelInfoVO.add(t);
 			}
 		}
 
@@ -78,38 +71,13 @@ public class ExcelReader {
 			javaName += toUpperCaseFirstOne(aaaa.toLowerCase());
 		}
 
-		createXML(field, tableName, packagename);
-		createJAVA(tableName, packagename, chinaName);
+		//createXML(field, tableName, packagename);
+		//createJAVA(tableName, packagename, chinaName);
 		// createJAVADao(tableName,packagename,chinaName);
-		createSQL(tableName, TabelInfoVO);
-
+          new MySqlSQLBean(FILE_PATH, javaName).doCreateSQL(tableName, tabelInfoVO);
 	}
 
-	private static void createSQL(String tableName, List<TabelInfoVO> TabelInfoVO2) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		sb.append("CREATE TABLE IF NOT EXISTS " + tableName.toUpperCase() + " ("+"\r\n");
-		for (TabelInfoVO t : TabelInfoVO2) {
-			sb.append(t.name + " " + t.type);
-			if (t.length.length() > 0) {
-				sb.append(" (" + t.length + ")");
-			}
-			if (t.must.length() > 0) {
-				sb.append(" not null ");
-			}
-			if (t.pk.equals("1")) {
-				sb.append(" primary key");
-			}
-			sb.append(","+"\r\n");
-		}
-		sb.delete(sb.length()-3, sb.length());
-		sb.append( ");");
-		File f = new File(FILE_PATH + javaName + "SQL.txt");
-		f.createNewFile();
-		FileWriter fi = new FileWriter(f);
-		fi.write(sb.toString());
-		fi.flush();
-		fi.close();
-	}
+
 
 	static String javaName;
 
@@ -220,7 +188,7 @@ public class ExcelReader {
 	// sb.append("\r\n");
 	// sb.append("\t/**��ͨģ��"+chinaName+"Dao*/");
 	// sb.append("\r\n");
-	// sb.append("	@Repository(\""+tableName+"Dao\")");
+	// sb.append(" @Repository(\""+tableName+"Dao\")");
 	// sb.append("\r\n");
 	// sb.append("public class "+tableName+"Dao extends BaseDao {");
 	// sb.append("\r\n");
@@ -230,13 +198,15 @@ public class ExcelReader {
 	// sb.append("\r\n");
 	// sb.append("\t/**��ѯ"+chinaName+"*/");
 	// sb.append("\r\n");
-	// sb.append("\tList<Map<String,Object>> select"+tableName+"(Map<String,Object> map)");
+	// sb.append("\tList<Map<String,Object>>
+	// select"+tableName+"(Map<String,Object> map)");
 	// sb.append("\r\n");
 	// sb.append("\t\t{return dao. select"+tableName+"(map);}");
 	// sb.append("\r\n");
 	// sb.append("\t/**ģ���ѯ"+chinaName+"*/");
 	// sb.append("\r\n");
-	// sb.append("\tList<Map<String,Object>> select"+tableName+"Like(Map<String,Object> map)");
+	// sb.append("\tList<Map<String,Object>>
+	// select"+tableName+"Like(Map<String,Object> map)");
 	// sb.append("\r\n");
 	// sb.append("\t\t{return dao. select"+tableName+"Like(map);}");
 	// sb.append("\r\n");
@@ -278,13 +248,10 @@ public class ExcelReader {
 		if (Character.isUpperCase(s.charAt(0)))
 			return s;
 		else
-			return (new StringBuilder())
-					.append(Character.toUpperCase(s.charAt(0)))
-					.append(s.substring(1)).toString();
+			return (new StringBuilder()).append(Character.toUpperCase(s.charAt(0))).append(s.substring(1)).toString();
 	}
 
-	private static void createJAVA(String tableName, String packageName,
-			String chinaName) throws IOException {
+	private static void createJAVA(String tableName, String packageName, String chinaName) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("package " + packageName + ";");
 		sb.append("\r\n");
@@ -298,13 +265,11 @@ public class ExcelReader {
 		sb.append("\r\n");
 		sb.append("\t/**查询" + chinaName + "*/");
 		sb.append("\r\n");
-		sb.append("\tList<Map<String,Object>> select" + javaName
-				+ "(Map<String,Object> map);");
+		sb.append("\tList<Map<String,Object>> select" + javaName + "(Map<String,Object> map);");
 		sb.append("\r\n");
 		sb.append("\t/**模糊查询" + chinaName + "*/");
 		sb.append("\r\n");
-		sb.append("\tList<Map<String,Object>> select" + javaName
-				+ "Like(Map<String,Object> map);");
+		sb.append("\tList<Map<String,Object>> select" + javaName + "Like(Map<String,Object> map);");
 		sb.append("\r\n");
 		sb.append("\t/**查询" + chinaName + "数量*/");
 		sb.append("\r\n");
@@ -323,22 +288,19 @@ public class ExcelReader {
 		sb.append("\tint delete" + javaName + "(Map<String,Object> map);");
 		sb.append("\r\n");
 		sb.append("}");
-		FileOutputStream fos = new FileOutputStream(FILE_PATH + javaName
-				+ "Mapper.java");
+		FileOutputStream fos = new FileOutputStream(FILE_PATH + javaName + "Mapper.java");
 		OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
 		osw.write(sb.toString());
 		osw.flush();
 		osw.close();
 	}
 
-	private static void createXML(List<String> field2, String tableName,
-			String packageName) throws IOException {
+	private static void createXML(List<String> field2, String tableName, String packageName) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<?xml version=\"1.0\" encoding=\"utf-8\" ?> \n");
 		sb.append("<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\"\n");
 		sb.append("\"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">\n");
-		sb.append("<mapper namespace=\"" + packageName + "." + javaName
-				+ "Mapper\">\n");
+		sb.append("<mapper namespace=\"" + packageName + "." + javaName + "Mapper\">\n");
 		sb.append(createSelect(field, tableName) + "\n");
 		sb.append(createSelectLike(field2, tableName) + "\n");
 		sb.append(createInsert(field, tableName) + "\n");
@@ -356,20 +318,16 @@ public class ExcelReader {
 
 	private static String createDelete(List<String> list, String tableName) {
 		StringBuilder bd = new StringBuilder();
-		bd.append("<delete id=\"delete" + javaName
-				+ "\" parameterType=\"java.util.HashMap\" > \n");
+		bd.append("<delete id=\"delete" + javaName + "\" parameterType=\"java.util.HashMap\" > \n");
 
 		bd.append("DELETE FROM " + tableName);
 		bd.append(" <where>  ");
 
 		for (int i = 0; i < list.size(); i++) {
-			bd.append("	  <if test=\"_parameter.containsKey('WHERE_"
-					+ list.get(i) + "')\">\n");
+			bd.append("	  <if test=\"_parameter.containsKey('WHERE_" + list.get(i) + "')\">\n");
 			bd.append("    <choose>\n");
-			bd.append("         <when test=\"WHERE_" + list.get(i)
-					+ " != null\" > \n");
-			bd.append("            AND " + list.get(i) + " = #{WHERE_"
-					+ list.get(i) + "}\n");
+			bd.append("         <when test=\"WHERE_" + list.get(i) + " != null\" > \n");
+			bd.append("            AND " + list.get(i) + " = #{WHERE_" + list.get(i) + "}\n");
 			bd.append("        </when>\n");
 			bd.append("        <otherwise>\n");
 			bd.append("           AND " + list.get(i) + " IS NULL\n");
@@ -385,8 +343,7 @@ public class ExcelReader {
 
 	private static String createUpdate(List<String> list, String tableName) {
 		StringBuilder bd = new StringBuilder();
-		bd.append("<update id=\"update" + javaName
-				+ "\" parameterType=\"java.util.HashMap\" > \n");
+		bd.append("<update id=\"update" + javaName + "\" parameterType=\"java.util.HashMap\" > \n");
 		bd.append("update " + tableName + " <set>");
 		for (int i = 0; i < list.size(); i++) {
 
@@ -395,21 +352,17 @@ public class ExcelReader {
 				continue;
 			}
 
-			bd.append(" <if test=\"_parameter.containsKey('" + list.get(i)
-					+ "')\">\n");
+			bd.append(" <if test=\"_parameter.containsKey('" + list.get(i) + "')\">\n");
 			bd.append("   <choose>\n");
 			bd.append("       <when test=\"" + list.get(i) + " != null\" > \n");
-			if (list.get(i).equals("UPDATE_DATE_TIME")
-					|| list.get(i).equals("ENTRY_DATE_TIME"))
+			if (list.get(i).equals("UPDATE_DATE_TIME") || list.get(i).equals("ENTRY_DATE_TIME"))
 				bd.append(list.get(i) + "=CURRENT_TIMESTAMP(6)");
 			else
-				bd.append("          " + list.get(i) + " = #{" + list.get(i)
-						+ "},\n");
+				bd.append("          " + list.get(i) + " = #{" + list.get(i) + "},\n");
 
 			bd.append("       </when>\n");
 			bd.append("      <otherwise>\n");
-			if (list.get(i).equals("UPDATE_DATE_TIME")
-					|| list.get(i).equals("ENTRY_DATE_TIME"))
+			if (list.get(i).equals("UPDATE_DATE_TIME") || list.get(i).equals("ENTRY_DATE_TIME"))
 				bd.append(list.get(i) + "=CURRENT_TIMESTAMP(6)");
 			else
 				bd.append("         " + list.get(i) + " = NULL,\n");
@@ -421,13 +374,10 @@ public class ExcelReader {
 		}
 		bd.append("</set > \n   <where>\n");
 		for (int i = 0; i < list.size(); i++) {
-			bd.append("	  <if test=\"_parameter.containsKey('WHERE_"
-					+ list.get(i) + "')\">\n");
+			bd.append("	  <if test=\"_parameter.containsKey('WHERE_" + list.get(i) + "')\">\n");
 			bd.append("    <choose>\n");
-			bd.append("         <when test=\"WHERE_" + list.get(i)
-					+ " != null\" > \n");
-			bd.append("            AND " + list.get(i) + " = #{WHERE_"
-					+ list.get(i) + "}\n");
+			bd.append("         <when test=\"WHERE_" + list.get(i) + " != null\" > \n");
+			bd.append("            AND " + list.get(i) + " = #{WHERE_" + list.get(i) + "}\n");
 			bd.append("        </when>\n");
 			bd.append("        <otherwise>\n");
 			bd.append("           AND " + list.get(i) + " IS NULL\n");
@@ -443,8 +393,7 @@ public class ExcelReader {
 
 	static String createInsert(List<String> list, String tableName) {
 		StringBuilder bd = new StringBuilder();
-		bd.append("<insert id=\"insert" + javaName
-				+ "\" parameterType=\"java.util.HashMap\" > \n");
+		bd.append("<insert id=\"insert" + javaName + "\" parameterType=\"java.util.HashMap\" > \n");
 		bd.append("insert into " + tableName + "( \n");
 		for (int i = 0; i < list.size(); i++) {
 			if (i == list.size() - 1) {
@@ -458,13 +407,12 @@ public class ExcelReader {
 		for (int i = 0; i < list.size(); i++) {
 
 			bd.append("  <choose> \n ");
-			bd.append("    <when test=\"_parameter.containsKey('" + list.get(i)
-					+ "') and " + list.get(i) + " != null\" >   \n ");
+			bd.append("    <when test=\"_parameter.containsKey('" + list.get(i) + "') and " + list.get(i)
+					+ " != null\" >   \n ");
 
 			if (i != 0)
 				bd.append(",");
-			if (list.get(i).equals("UPDATE_DATE_TIME")
-					|| list.get(i).equals("ENTRY_DATE_TIME"))
+			if (list.get(i).equals("UPDATE_DATE_TIME") || list.get(i).equals("ENTRY_DATE_TIME"))
 				bd.append(" CURRENT_TIMESTAMP(6) ");
 			else
 				bd.append("        #{" + list.get(i) + "}  \n");
@@ -473,8 +421,7 @@ public class ExcelReader {
 			bd.append("    <otherwise>  \n");
 			if (i != 0)
 				bd.append(",");
-			if (list.get(i).equals("UPDATE_DATE_TIME")
-					|| list.get(i).equals("ENTRY_DATE_TIME"))
+			if (list.get(i).equals("UPDATE_DATE_TIME") || list.get(i).equals("ENTRY_DATE_TIME"))
 				bd.append(" CURRENT_TIMESTAMP(6) ");
 			else
 				bd.append("         NULL  \n");
@@ -492,8 +439,7 @@ public class ExcelReader {
 
 	static String createSelect(List<String> list, String tableName) {
 		StringBuilder bd = new StringBuilder();
-		bd.append("<select id=\"select" + javaName
-				+ "\" resultType=\"java.util.HashMap\" > \n");
+		bd.append("<select id=\"select" + javaName + "\" resultType=\"java.util.HashMap\" > \n");
 		bd.append("SELECT \n");
 		for (int i = 0; i < list.size(); i++) {
 			if (i == list.size() - 1) {
@@ -507,13 +453,10 @@ public class ExcelReader {
 
 		for (int i = 0; i < list.size(); i++) {
 
-			bd.append("<if test=\"_parameter.containsKey('WHERE_" + list.get(i)
-					+ "')\">\t\n");
+			bd.append("<if test=\"_parameter.containsKey('WHERE_" + list.get(i) + "')\">\t\n");
 			bd.append("<choose>\t\n");
-			bd.append(" <when test=\"WHERE_" + list.get(i)
-					+ " != null\" >\t\n ");
-			bd.append("      AND " + list.get(i) + " = #{WHERE_" + list.get(i)
-					+ "}\t\n");
+			bd.append(" <when test=\"WHERE_" + list.get(i) + " != null\" >\t\n ");
+			bd.append("      AND " + list.get(i) + " = #{WHERE_" + list.get(i) + "}\t\n");
 			bd.append(" </when>\t\n");
 			bd.append(" <otherwise>\t\n");
 			bd.append("    AND " + list.get(i) + " IS NULL\t\n");
@@ -529,8 +472,7 @@ public class ExcelReader {
 
 	static String createSelectLike(List<String> list, String tableName) {
 		StringBuilder bd = new StringBuilder();
-		bd.append("<select id=\"select" + javaName
-				+ "Like\" resultType=\"java.util.HashMap\" > \n");
+		bd.append("<select id=\"select" + javaName + "Like\" resultType=\"java.util.HashMap\" > \n");
 		bd.append("SELECT \n");
 		for (int i = 0; i < list.size(); i++) {
 			if (i == list.size() - 1) {
@@ -544,13 +486,10 @@ public class ExcelReader {
 
 		for (int i = 0; i < list.size(); i++) {
 
-			bd.append("<if test=\"_parameter.containsKey('WHERE_" + list.get(i)
-					+ "')\">\t\n");
+			bd.append("<if test=\"_parameter.containsKey('WHERE_" + list.get(i) + "')\">\t\n");
 			bd.append("<choose>\t\n");
-			bd.append(" <when test=\"WHERE_" + list.get(i)
-					+ " != null\" >\t\n ");
-			bd.append("      AND " + list.get(i) + " Like '%'|| #{WHERE_"
-					+ list.get(i) + "}|| '%'\t\n");
+			bd.append(" <when test=\"WHERE_" + list.get(i) + " != null\" >\t\n ");
+			bd.append("      AND " + list.get(i) + " Like '%'|| #{WHERE_" + list.get(i) + "}|| '%'\t\n");
 			bd.append(" </when>\t\n");
 			bd.append(" <otherwise>\t\n");
 			bd.append("    AND " + list.get(i) + " IS NULL\t\n");
@@ -565,8 +504,7 @@ public class ExcelReader {
 
 	static String createSelectCount(List<String> list, String tableName) {
 		StringBuilder bd = new StringBuilder();
-		bd.append("<select id=\"select" + javaName
-				+ "Count\" resultType=\"java.lang.Integer\" > \n");
+		bd.append("<select id=\"select" + javaName + "Count\" resultType=\"java.lang.Integer\" > \n");
 		bd.append("SELECT count(1) \n");
 
 		bd.append(" FROM " + tableName + " \t\n");
@@ -574,13 +512,10 @@ public class ExcelReader {
 
 		for (int i = 0; i < list.size(); i++) {
 
-			bd.append("<if test=\"_parameter.containsKey('WHERE_" + list.get(i)
-					+ "')\">\t\n");
+			bd.append("<if test=\"_parameter.containsKey('WHERE_" + list.get(i) + "')\">\t\n");
 			bd.append("<choose>\t\n");
-			bd.append(" <when test=\"WHERE_" + list.get(i)
-					+ " != null\" >\t\n ");
-			bd.append("      AND " + list.get(i) + " =  #{WHERE_" + list.get(i)
-					+ "} \t\n");
+			bd.append(" <when test=\"WHERE_" + list.get(i) + " != null\" >\t\n ");
+			bd.append("      AND " + list.get(i) + " =  #{WHERE_" + list.get(i) + "} \t\n");
 			bd.append(" </when>\t\n");
 			bd.append(" <otherwise>\t\n");
 			bd.append("    AND " + list.get(i) + " IS NULL\t\n");

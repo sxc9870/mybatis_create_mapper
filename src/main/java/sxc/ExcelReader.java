@@ -24,7 +24,6 @@ import sxc.mybatis.MySqlSQLBean;
 public class ExcelReader {
 	static List<TabelInfoVO> tabelInfoVO = new ArrayList<>();
 
-	private static String packagename = "com.tes.ibatis.mapper";
 
 	private static final String FILE_PATH = "d:\\SQL\\";
 	private POIFSFileSystem fs;

@@ -1,4 +1,4 @@
-package sxc;
+package sxc.sql;
 
 import java.util.Map;
 

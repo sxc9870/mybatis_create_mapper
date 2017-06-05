@@ -1,12 +1,9 @@
-package sxc.mybatis;
+package sxc.sql;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-
-import sxc.TabelInfoVO;
-import sxc.sql.create.ISQLCreate;
 
 public class MySqlSQLBean implements ISQLCreate {
 	private String filePath;

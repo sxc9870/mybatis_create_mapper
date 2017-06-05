@@ -12,6 +12,8 @@
     另外，如果使用了mybatis-generator-maven-plugin，那么在pom.xml中定义的properties都可以直接在generatorConfig.xml中使用
 <properties resource="" url="" />
  -->
+ <!-- 这里引入扩展插件 -->
+
 <properties resource="${common}" />
  <!-- 在MBG工作的时候，需要额外加载的依赖包
      location属性指明加载jar/zip包的全路径
@@ -46,7 +48,7 @@
     <!-- beginningDelimiter和endingDelimiter：指明数据库的用于标记数据库对象名的符号，比如ORACLE就是双引号，MYSQL默认是`反引号； -->
     <property name="beginningDelimiter" value="`"/>
     <property name="endingDelimiter" value="`"/>
-
+ <plugin type="sxc.generator.plugin.PaginationPlugin" />
     <!-- 必须要有的，使用这个配置链接数据库
         @TODO:是否可以扩展
      -->

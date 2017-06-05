@@ -1,9 +1,7 @@
-package sxc.sql.create;
+package sxc.sql;
 
 import java.io.IOException;
 import java.util.List;
-
-import sxc.TabelInfoVO;
 
 public interface ISQLCreate {
 

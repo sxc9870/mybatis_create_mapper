@@ -1,5 +1,5 @@
 package sxc.generator;
 
-public class BaseDomain {
+public class BaseVO {
 
 }

@@ -85,7 +85,17 @@ public class TabelInfoVO {
 		name = new TableCell(INDEX_FIELD_NAME, data);
 		des = new TableCell(INDEX_DES, data);
 		type = new TableCell(INDEX_TYPE, data);
+		String s=data[INDEX_LENGTH];
+		String[]ss=s.split("-");
 		length = new TableCell(INDEX_LENGTH, data);
+		if(ss.length>=2){
+			length.setValue(String.format("%s,%s",ss[0], ss[1]));
+		} 
+		
+		
+		 
+		
+		
 		must = new TableCell(INDEX_MUST, data);
 		pk = new TableCell(INDEX_PK, data);
 		defaultValue=new

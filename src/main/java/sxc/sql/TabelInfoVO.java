@@ -4,6 +4,11 @@ import java.util.Map;
 
 public class TabelInfoVO {
 
+	public TabelInfoVO() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	private TableCell name, des, type, length, must, pk,comment,
 			defaultValue;
 

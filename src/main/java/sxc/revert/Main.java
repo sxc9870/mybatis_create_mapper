@@ -53,8 +53,7 @@ public class Main {
 
 		for (String one : map.keySet()) {
 			if (map.get(one).cols.size() != 0){
-				ExcelWriter.writeExl(map.get(one));
-			break;
+			 System.out.println(map.get(one));
 		}
 		}
 	}
@@ -111,8 +110,8 @@ public class Main {
 		@Override
 		public String toString() {
 			StringBuilder str = new StringBuilder();
-			str.append(name).append("\t").append(chinaName).append("\t").append(type).append("\t")
-					.append(notNull ? "○" : "×");
+			str.append("\""+name+"\":[\"").
+			append(chinaName+"\"],");
 			str.append("\n");
 			return str.toString();
 		}
@@ -126,15 +125,17 @@ public class Main {
 		@Override
 		public String toString() {
 			StringBuilder str = new StringBuilder();
-			str.append(tableName).append("\t").append(comment);
+			str.append("\""+tableName+"\":{").append("\n").append("\t\"chinaName\":\""+comment+"\",");
 			str.append("\n");
 			for (ColInfo one : cols) {
-
-				str.append("\t" + one);
-
+				if(cols.get(cols.size()-1)==one){
+					str.append("\t" + one.toString().replace(",", ""));
+				}else 
+					str.append("\t" + one);
 			}
 
-			return str.toString().replaceAll("`", "");
+			str.append("},");
+			return str.toString();
 		}
 	}
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,8 +13,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
-
-	private static Pattern s = Pattern.compile("CREATE TABLE IF NOT EXISTS `mydb`.`\\w+");
+	private static boolean json = false;
+	
+	
+	private static boolean tiny=true;
+	private static Pattern s = Pattern.compile("CREATE TABLE IF NOT EXISTS `mydb`.`");
 
 	private static Pattern e = Pattern.compile("COMMENT = '");
 
@@ -41,7 +45,7 @@ public class Main {
 				}
 				m = mm.matcher(one);
 				if (inBody && m.find()) {
-					info.cols.add(getCol(one));
+					info.cols.add(getCol(one,info));
 				}
 				m = e.matcher(one);
 				if (m.find()) {
@@ -51,30 +55,56 @@ public class Main {
 			}
 		}
 
+		List<ColInfo> listAll = new ArrayList<>();
 		for (String one : map.keySet()) {
-			if (map.get(one).cols.size() != 0){
-			 System.out.println(map.get(one));
+			if (map.get(one).cols.size() != 0) {
+				 if(!json) listAll.addAll(map.get(one).cols) ;
+				 else
+				System.err.println(map.get(one));
+				 ExcelWriter.writeExl(map.get(one));
+			}
 		}
+		for (ColInfo o : listAll) {
+			String s = o.toString();
+			if (s.contains("is_delete") || s.contains("create_time") || s.contains("create_user_id")
+					|| s.contains("update_time") || s.contains("borrower_id") || o.name.equals("id")
+					|| s.contains("update_user_id") || o.name.matches("\\w+") == false) {
+				continue;
+			}
+			if(o.toString().contains("file"))
+			{
+				
+			}
+			if(tiny){
+				if(o.type.toUpperCase().contains("DECIMAL"))
+				System.out.println(MessageFormat.format("{0},{1},{2},{3}", o.tableInfo.comment, o.chinaName, o.type, o.length));
+
+			}else 
+			System.out.println(MessageFormat.format("{0},{1},{2},{3}", o.name, o.chinaName, o.type, o.length));
+
 		}
 	}
 
-	 
-
-	private static ColInfo getCol(String one) {
+	private static ColInfo getCol(String one,TableInfo t) {
 		ColInfo info = new ColInfo();
+		info.tableInfo=t;
 		if (one.contains("NOT NULL")) {
 			info.notNull = true;
 		}
 
 		one = one.replace("NOT NULL", "").replace("NULL", "");
 		String[] s = one.trim().split(" ");
-		info.name = s[0].replace("`","");
-		if(s[1].contains("(")){
-			info.type = s[1].substring(0, s[1].indexOf("("));
-			info.length=s[1].substring(s[1].indexOf("(")+1,s[1].length()-1);
+		info.name = s[0].replace("`", "");
+		if(s.length==1){
+			throw new RuntimeException(one);
+			
 		}
-		else info.type = s[1];
-		
+		if (s[1].contains("(")) {
+			info.type = s[1].substring(0, s[1].indexOf("("));
+			info.length = s[1].substring(s[1].indexOf("(") + 1, s[1].length() - 1);
+		} else
+			info.type = s[1];
+
 		for (int i = 0; i < s.length; i++) {
 			if (s[i].contains("COMMENT")) {
 				String ss[] = s[i + 1].split(":");
@@ -82,18 +112,17 @@ public class Main {
 					info.comment = ss[0];
 
 				} else {
-					info.chinaName = ss[0].replace("'","").replace(",","");
+					info.chinaName = ss[0].replace("'", "").replace(",", "");
 					if (ss.length > 1) {
 						info.comment = ss[1];
 					}
 				}
 			}
 			if (s[i].contains("DEFAULT")) {
-				info.def=s[i+1];
+				info.def = s[i + 1];
 			}
-		
+
 		}
- 
 
 		return info;
 	}
@@ -104,17 +133,22 @@ public class Main {
 	}
 
 	public static class ColInfo {
-		String name, type, chinaName, comment, def,length;
+		String name, type, chinaName, comment, def, length;
 		boolean notNull = false;
 
 		@Override
 		public String toString() {
 			StringBuilder str = new StringBuilder();
-			str.append("\""+name+"\":[\"").
-			append(chinaName+"\"],");
+			str.append("\"" + name + "\":[\"");
+
+			if (!json)
+				str.append(chinaName + " " + type + (length == null ? "" : length) + "\"],");
+			else
+				str.append(chinaName + "\"],");// 输出JSON
 			str.append("\n");
 			return str.toString();
 		}
+	TableInfo tableInfo;
 	}
 
 	public static class TableInfo {
@@ -125,12 +159,12 @@ public class Main {
 		@Override
 		public String toString() {
 			StringBuilder str = new StringBuilder();
-			str.append("\""+tableName+"\":{").append("\n").append("\t\"chinaName\":\""+comment+"\",");
+			str.append("\"" + tableName + "\":{").append("\n").append("\t\"chinaName\":\"" + comment + "\",");
 			str.append("\n");
 			for (ColInfo one : cols) {
-				if(cols.get(cols.size()-1)==one){
+				if (cols.get(cols.size() - 1) == one) {
 					str.append("\t" + one.toString().replace(",", ""));
-				}else 
+				} else
 					str.append("\t" + one);
 			}
 

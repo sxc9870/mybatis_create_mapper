@@ -58,7 +58,7 @@ public class ExcelWriter {
 		
 		
 		
-		FileOutputStream	  out =  new FileOutputStream("d:\\sql\\"+tableInfo.tableName+".xls");  
+		FileOutputStream	  out =  new FileOutputStream("d:\\sql\\"+tableInfo.comment+".xls");  
           wb.write(out);  
 		
 	}

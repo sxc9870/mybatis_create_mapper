@@ -13,14 +13,11 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
-import sxc.revert.Main.ColInfo;
-import sxc.revert.Main.TableInfo;
 
-public class ExcelWriter {
+public class ExcelSQLDocWrite {
 
 	public static void writeExl(TableInfo tableInfo) throws FileNotFoundException, IOException {
 		File f = new File("d:\\sql\\templates.xls");
-
 		readExcelTitle(new FileInputStream(f),tableInfo);
 		
 		
@@ -30,24 +27,14 @@ public class ExcelWriter {
 	
 	
 	public static void readExcelTitle(InputStream is,TableInfo tableInfo) throws IOException {
-
 		POIFSFileSystem fs = new POIFSFileSystem(is);
 		HSSFWorkbook wb = new HSSFWorkbook(fs);
-
 		HSSFSheet sheet = wb.getSheetAt(0);
-		
-		 
 		HSSFRow titleRow = sheet.getRow(5);
 		titleRow.getCell(2).setCellValue(tableInfo.tableName);
 		titleRow.getCell(7).setCellValue(tableInfo.comment);
-		
-		
-		
-		
 		HSSFCellStyle pkRowStyle = sheet.getRow(7).getRowStyle();
 		HSSFCellStyle normalStyle= sheet.getRow(8).getRowStyle();
-		
-		
 		int i=7,index=1;
 		for(ColInfo one:tableInfo.cols)
 		{
@@ -56,11 +43,8 @@ public class ExcelWriter {
 			i++;index++;
 		}
 		
-		
-		
 		FileOutputStream	  out =  new FileOutputStream("d:\\sql\\"+tableInfo.comment+".xls");  
           wb.write(out);  
-		
 	}
 
 	

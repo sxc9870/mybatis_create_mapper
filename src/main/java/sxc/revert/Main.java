@@ -14,9 +14,8 @@ import java.util.regex.Pattern;
 
 public class Main {
 	private static boolean json = false;
-	
-	
-	private static boolean tiny=true;
+
+	private static boolean tiny = true;
 	private static Pattern s = Pattern.compile("CREATE TABLE IF NOT EXISTS `mydb`.`");
 
 	private static Pattern e = Pattern.compile("COMMENT = '");
@@ -45,23 +44,109 @@ public class Main {
 				}
 				m = mm.matcher(one);
 				if (inBody && m.find()) {
-					info.cols.add(getCol(one,info));
+					info.cols.add(getCol(one, info));
 				}
 				m = e.matcher(one);
 				if (m.find()) {
-					info.comment = one.replace("COMMENT = '", "").replace("';", "");
+					if (one.contains("|")) {
+						one = one.replace("COMMENT = '", "").replace("';", "");
+						String[] b = one.split("\\|");
+						info.comment = one;
+						info.isM = b[1].equals("M");
+					} else
+						info.comment = one.replace("COMMENT = '", "").replace("';", "");
 					inBody = false;
 				}
 			}
 		}
 
+		washMaster(map);
+
+		// printCol();
+	}
+
+	private static void washMaster(Map<String, TableInfo> map) {
+		for (String key : map.keySet()) {
+			findRef(map.get(key), map);
+		}
+		List<String> rk = new ArrayList<>();
+		for (String key : mstMap.keySet()) {
+			List<TableRef> o = mstMap.get(key);
+
+			for (String key2 : mstMap.keySet()) {
+				if (key2 == key)
+					continue;
+				List<TableRef> o2 = mstMap.get(key2);
+				for (TableRef oo : o2) {
+					if (oo.refTable.tableName.equals(key)) {
+						oo.refTable.subTable.addAll(mstMap.get(key));
+						rk.add(key);
+					}
+				}
+			}
+
+		}
+		for (String key2 : rk) {
+			mstMap.remove(key2);
+		}
+		
+		
+		
+		
+		
+			ExcelApiDocWrite.writeExl(mstMap);
+	}
+
+	private static Map<String, List<TableRef>> mstMap2 = new HashMap<>();
+
+	private static Map<String, List<TableRef>> mstMap = new HashMap<>();
+
+	private static void findRef(TableInfo tableInfo, Map<String, TableInfo> map) {
+
+		if (tableInfo.comment.split("|").length > 0)// LM_发放记录|lm_loan_apply,1
+		{
+			String[] aa = tableInfo.comment.split("\\|"); // ["LM_发放记录",
+															// "lm_loan_apply,1"]
+			for (String aaa : aa) {
+				if (aaa.contains(",")) {
+					String[] aaaa = aaa.split("\\,");
+					TableRef r = new TableRef();
+					r.refTable = tableInfo;
+					r.tableRefCount = aaaa[1];
+					if (mstMap.get(aaaa[0]) == null) {
+						mstMap.put(aaaa[0], new ArrayList<>());
+					}
+					mstMap.get(aaaa[0]).add(r);
+				}
+			}
+		}
+		System.out.println();
+		// for (TableRef aa : a) {
+		// for (String key : map.keySet()) {
+		// if (tableInfo == map.get(key))
+		// continue;
+		// if (aa.tableName.equals(map.get(key).tableName)) {
+		// if (mstMap.get(map.get(key).tableName) == null) {
+		// mstMap.put(map.get(key).tableName, new ArrayList<>());
+		// }
+		//
+		// mstMap.get(map.get(key).tableName).add(aa);
+		// break;
+		// }
+		// }
+		// }
+
+	}
+
+	private static void printCol(Map<String, TableInfo> map) throws FileNotFoundException, IOException {
 		List<ColInfo> listAll = new ArrayList<>();
 		for (String one : map.keySet()) {
 			if (map.get(one).cols.size() != 0) {
-				 if(!json) listAll.addAll(map.get(one).cols) ;
-				 else
-				System.err.println(map.get(one));
-				 ExcelWriter.writeExl(map.get(one));
+				if (!json)
+					listAll.addAll(map.get(one).cols);
+				else
+					System.err.println(map.get(one));
+				ExcelSQLDocWrite.writeExl(map.get(one));
 			}
 		}
 		for (ColInfo o : listAll) {
@@ -71,33 +156,31 @@ public class Main {
 					|| s.contains("update_user_id") || o.name.matches("\\w+") == false) {
 				continue;
 			}
-			if(o.toString().contains("file"))
-			{
-				
+			if (o.toString().contains("file")) {
+
 			}
-			if(tiny){
-				if(o.type.toUpperCase().contains("DECIMAL"))
-				System.out.println(MessageFormat.format("{0},{1},{2},{3}", o.tableInfo.comment, o.chinaName, o.type, o.length));
+			if (tiny) {
+				if (o.type.toUpperCase().contains("DECIMAL"))
+					System.out.println(MessageFormat.format("{0},{1},{2},{3}", o.tableInfo.comment, o.chinaName, o.type,
+							o.length));
 
-			}else 
-			System.out.println(MessageFormat.format("{0},{1},{2},{3}", o.name, o.chinaName, o.type, o.length));
-
+			} else
+				System.out.println(MessageFormat.format("{0},{1},{2},{3}", o.name, o.chinaName, o.type, o.length));
 		}
 	}
 
-	private static ColInfo getCol(String one,TableInfo t) {
+	private static ColInfo getCol(String one, TableInfo t) {
 		ColInfo info = new ColInfo();
-		info.tableInfo=t;
+		info.tableInfo = t;
 		if (one.contains("NOT NULL")) {
 			info.notNull = true;
 		}
-
 		one = one.replace("NOT NULL", "").replace("NULL", "");
 		String[] s = one.trim().split(" ");
 		info.name = s[0].replace("`", "");
-		if(s.length==1){
+		if (s.length == 1) {
 			throw new RuntimeException(one);
-			
+
 		}
 		if (s[1].contains("(")) {
 			info.type = s[1].substring(0, s[1].indexOf("("));
@@ -123,53 +206,11 @@ public class Main {
 			}
 
 		}
-
 		return info;
 	}
 
 	private static String getTableName(String one) {
 		return one.replace("CREATE TABLE IF NOT EXISTS `mydb`.`", "").replace("` (", "");
-
 	}
 
-	public static class ColInfo {
-		String name, type, chinaName, comment, def, length;
-		boolean notNull = false;
-
-		@Override
-		public String toString() {
-			StringBuilder str = new StringBuilder();
-			str.append("\"" + name + "\":[\"");
-
-			if (!json)
-				str.append(chinaName + " " + type + (length == null ? "" : length) + "\"],");
-			else
-				str.append(chinaName + "\"],");// 输出JSON
-			str.append("\n");
-			return str.toString();
-		}
-	TableInfo tableInfo;
-	}
-
-	public static class TableInfo {
-		String tableName;
-		List<ColInfo> cols = new ArrayList<>();
-		String comment;
-
-		@Override
-		public String toString() {
-			StringBuilder str = new StringBuilder();
-			str.append("\"" + tableName + "\":{").append("\n").append("\t\"chinaName\":\"" + comment + "\",");
-			str.append("\n");
-			for (ColInfo one : cols) {
-				if (cols.get(cols.size() - 1) == one) {
-					str.append("\t" + one.toString().replace(",", ""));
-				} else
-					str.append("\t" + one);
-			}
-
-			str.append("},");
-			return str.toString();
-		}
-	}
 }

@@ -16,9 +16,17 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 public class ExcelSQLDocWrite {
 
-	public static void writeExl(TableInfo tableInfo) throws FileNotFoundException, IOException {
+	public static void writeExl(TableInfo tableInfo)  {
 		File f = new File("d:\\sql\\templates.xls");
-		readExcelTitle(new FileInputStream(f),tableInfo);
+		try {
+            readExcelTitle(new FileInputStream(f),tableInfo);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 		
 		
 	}
@@ -43,7 +51,7 @@ public class ExcelSQLDocWrite {
 			i++;index++;
 		}
 		
-		FileOutputStream	  out =  new FileOutputStream("d:\\sql\\"+tableInfo.comment+".xls");  
+		FileOutputStream	  out =  new FileOutputStream("d:\\sql\\"+tableInfo.comment.split("\\|")[0]+".xls");  
           wb.write(out);  
 	}
 

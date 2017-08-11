@@ -4,9 +4,9 @@ package sxc.revert;
 public  class ColInfo {
 	 	String name, type, chinaName, comment, def, length;
 	 	boolean notNull = false;
-		
+		boolean isEnmu=false;
 	 
-
+		String enmuName;
 	 	TableInfo tableInfo;
 //
 //		@Override
@@ -21,6 +21,7 @@ public  class ColInfo {
 //			str.append("\n");
 //			return str.toString();
 //		}
+        public String nameTF;
 
 	
 	}

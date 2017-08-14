@@ -16,7 +16,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import bm.Bank;
-import bm.Bankflow;
+import bm.BankFlow;
 import bm.CommonAttachment;
 import bm.CompanyAssets;
 import bm.CompanyBadDebt;
@@ -35,7 +35,7 @@ public class CompanyInfo {
     private CompanyBase base = new CompanyBase();
     private CompanyCredit credit=new CompanyCredit();
     private CompanyOther other=new CompanyOther();
-    private Bankflow bankflow=new Bankflow();
+    private BankFlow bankFlow=new BankFlow();
     private List<CompanyAssets> assets = new ArrayList<>();
     private List<CompanyBadDebt> badDebt = new ArrayList<>();
     private List<CompanyChannel> channel = new ArrayList<>();
@@ -138,7 +138,7 @@ public class CompanyInfo {
         testshareholder(ii.getJSONArray("shareholder").getJSONObject(0));
         testtax(ii.getJSONArray("tax").getJSONObject(0));
         testbank(ii.getJSONArray("bank").getJSONObject(0));
-        testbankflow(ii.getJSONObject("bankflow"));
+        testbankflow(ii.getJSONObject("bankFlow"));
         testcommonAttachment(ii.getJSONArray("commonAttachment").getJSONObject(0));
 
     }
@@ -340,12 +340,13 @@ public class CompanyInfo {
         this.other = other;
     }
 
-    public Bankflow getBankflow() {
-        return bankflow;
+ 
+    public BankFlow getBankFlow() {
+        return bankFlow;
     }
 
-    public void setBankflow(Bankflow bankflow) {
-        this.bankflow = bankflow;
+    public void setBankFlow(BankFlow bankFlow) {
+        this.bankFlow = bankFlow;
     }
 
     public List<CompanyAssets> getAssets() {

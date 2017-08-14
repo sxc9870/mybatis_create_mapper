@@ -16,7 +16,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import bm.Bank;
-import bm.Bankflow;
+import bm.BankFlow;
 import bm.CommonAttachment;
 import bm.PersonalAdditional;
 import bm.PersonalAssets;
@@ -38,11 +38,8 @@ public class PersonalInfo {
 
     private PersonalCredit credit = new PersonalCredit();
     private PersonalWork work = new PersonalWork();
-    private Bankflow bankflow = new Bankflow();
-
-  
+    private BankFlow bankFlow = new BankFlow();
     private PersonalSshf sshf = new PersonalSshf();
- 
     private PersonalOther other = new PersonalOther();
     private PersonalAdditional additional = new PersonalAdditional();
     private PersonalIncome income = new PersonalIncome();;
@@ -125,7 +122,7 @@ public class PersonalInfo {
         tastHouse(ii.getJSONArray("house").getJSONObject(0));
         testCredit(ii.getJSONObject("credit"));
         testWork(ii.getJSONObject("work"));
-        testBankflow(ii.getJSONObject("bankflow"));
+        testBankflow(ii.getJSONObject("bankFlow"));
         
         
         
@@ -437,14 +434,13 @@ public class PersonalInfo {
         this.work = work;
     }
 
-    public Bankflow getBankflow() {
-        return bankflow;
+  
+    public BankFlow getBankFlow() {
+        return bankFlow;
     }
-
-    public void setBankflow(Bankflow bankflow) {
-        this.bankflow = bankflow;
+    public void setBankFlow(BankFlow bankFlow) {
+        this.bankFlow = bankFlow;
     }
-
     public List<CommonAttachment> getAttachment() {
         return attachment;
     }

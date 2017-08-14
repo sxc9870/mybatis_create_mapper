@@ -14,7 +14,7 @@
  -->
  <!-- 这里引入扩展插件 -->
 
-<properties resource="${common}" />
+<properties resource="common.properties" />
  <!-- 在MBG工作的时候，需要额外加载的依赖包
      location属性指明加载jar/zip包的全路径
 <classPathEntry location="/Program Files/IBM/SQLLIB/java/db2java.zip" />
@@ -176,7 +176,7 @@
         注意，table里面很多参数都是对javaModelGenerator，context等元素的默认属性的一个复写；
      --> 
      
-    <table tableName="%" 
+    <table tableName="%"  
      >
   
         <!-- 参考 javaModelGenerator 的 constructorBased属性-->
@@ -277,7 +277,7 @@
 
          </columnOverride>   -->
 
-         <!-- ignoreColumn设置一个MGB忽略的列，如果设置了改列，那么在生成的domain中，生成的SQL中，都不会有该列出现
+         <!-- ignoreColumn设置一个MGB忽略的列，如果设置了改列，那么在生成的domain中，生成的SQL中，%都不会有该列出现
              column:指定要忽略的列的名字；
              delimitedColumnName：参考table元素的delimitAllColumns配置，默认为false
 

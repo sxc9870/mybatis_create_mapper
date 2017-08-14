@@ -3,7 +3,7 @@ package bm;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Bankflow {
+public class BankFlow {
     /**
      * 银行名称
      */

@@ -108,5 +108,11 @@ public class PaginationPlugin extends PluginAdapter {
 
 		return true;
 	}
+	
+	@Override
+	public void initialized(IntrospectedTable introspectedTable) {
+	    super.initialized(introspectedTable);
+	    System.out.println(introspectedTable.getMyBatis3JavaMapperType());
+	}
 
 }

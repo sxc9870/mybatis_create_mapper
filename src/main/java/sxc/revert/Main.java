@@ -71,15 +71,16 @@ public class Main {
                 }
             }
         }
-        // map.forEach((k,v)->
-        // ExcelSQLDocWrite.writeExl(v)
-        // );
+        for(TableInfo t:map){ 
+            System.out.println(ii++);
+        ExcelSQLDocWrite.writeExl(t);
+        }
 
-        washMaster(map, mstTable);
+        //  washMaster(map, mstTable);
 
         // printCol();
     }
-
+    private static int ii=0;
     private static List<TableInfo> mstTable = new ArrayList<>();
 
     /**

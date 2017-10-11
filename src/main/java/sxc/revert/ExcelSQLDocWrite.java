@@ -23,7 +23,7 @@ public class ExcelSQLDocWrite {
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -50,8 +50,8 @@ public class ExcelSQLDocWrite {
 			setOneRow(one,sheet.getRow(i),pkRowStyle,normalStyle,index);
 			i++;index++;
 		}
-		
-		FileOutputStream	  out =  new FileOutputStream("d:\\sql\\"+tableInfo.comment.split("\\|")[0]+".xls");  
+	
+		FileOutputStream	  out =  new FileOutputStream("d:\\sql\\"+tableInfo.nameCN.split("\\|")[0]+".xls");  
           wb.write(out);  
 	}
 

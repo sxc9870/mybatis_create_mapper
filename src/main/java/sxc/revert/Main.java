@@ -18,14 +18,14 @@ public class Main {
     private static boolean json = false;
 
     private static boolean tiny = true;
-    private static Pattern s = Pattern.compile("CREATE TABLE IF NOT EXISTS `mydb`.`");
+    private static Pattern s = Pattern.compile("CREATE TABLE `");
 
-    private static Pattern e = Pattern.compile("COMMENT = '");
+    private static Pattern e = Pattern.compile("COMMENT='");
 
     private static Pattern mm = Pattern.compile("  `");
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        File file = new File("d://test.sql");
+        File file = new File("d://yinglicai.sql");
         byte[] buffer = new byte[(int) file.length()];
 
         List<TableInfo> map = new ArrayList<>();
@@ -52,21 +52,9 @@ public class Main {
                 }
                 m = e.matcher(one);
                 if (m.find()) {
-                    if (one.contains("|")) {
-                        one = one.replace("COMMENT = '", "").replace("';", "");
-                        String[] b = one.split("\\|");
-                        info.comment = one;
-                        info.nameCN = b[0];
-                        info.isM = b[1].equals("M");
-                        if (info.isM)
-                            mstTable.add(info);
-                        else {
-                            info.parentTable = b[1].split("\\,")[0];
-                            if (b[1].split("\\,").length > 1)
-                                info.pcount = b[1].split("\\,")[1];
-                        }
-                    } else
-                        info.comment = one.replace("COMMENT = '", "").replace("';", "");
+                     
+                    info.comment = one.substring(one.indexOf("COMMENT='")+"COMMENT='".length(),one.length()-3);
+                    System.out.println(info.comment);
                     inBody = false;
                 }
             }

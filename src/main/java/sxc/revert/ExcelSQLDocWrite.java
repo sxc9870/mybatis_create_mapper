@@ -51,7 +51,7 @@ public class ExcelSQLDocWrite {
 			i++;index++;
 		}
 	
-		FileOutputStream	  out =  new FileOutputStream("d:\\sql\\"+tableInfo.nameCN.split("\\|")[0]+".xls");  
+		FileOutputStream	  out =  new FileOutputStream("d:\\sql\\"+tableInfo.comment+".xls");  
           wb.write(out);  
 	}
 

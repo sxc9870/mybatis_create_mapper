@@ -48,8 +48,8 @@
     <!-- beginningDelimiter和endingDelimiter：指明数据库的用于标记数据库对象名的符号，比如ORACLE就是双引号，MYSQL默认是`反引号； -->
     <property name="beginningDelimiter" value="`"/>
     <property name="endingDelimiter" value="`"/>
-	 <plugin type="sxc.generator.plugin.PaginationPlugin" />
-	 <plugin type="org.mybatis.generator.plugins.SerializablePlugin" /> 
+     <plugin type="sxc.generator.plugin.PaginationPlugin" />
+     <plugin type="org.mybatis.generator.plugins.SerializablePlugin" /> 
     <!-- 必须要有的，使用这个配置链接数据库
         @TODO:是否可以扩展
      -->
@@ -102,7 +102,7 @@
             注意：如果在key class或者record class中有root class相同的属性，MBG就不会重新生成这些属性了，包括：
                 1，属性名相同，类型相同，有相同的getter/setter方法；
          -->
-        <property name="rootClass" value="com.duoying.abs.common.base.BaseVO"/>
+        <property name="rootClass" value="com.duoying.abs.base.BaseVO"/>
 
         <!-- 设置是否在getter方法中，对String类型字段调用trim()方法 -->
         <property name="trimStrings" value="true"/>
@@ -176,9 +176,8 @@
         注意，table里面很多参数都是对javaModelGenerator，context等元素的默认属性的一个复写；
      --> 
      
-    <table tableName="lm_repayment_record"  
+    <table tableName="lm_loan_info"
      >
-  
         <!-- 参考 javaModelGenerator 的 constructorBased属性-->
         <property name="constructorBased" value="false"/>
 

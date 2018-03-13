@@ -36,5 +36,28 @@ public class Predicates {
 
         optional.ifPresent((s) -> System.out.println(s.charAt(0))); // "b"
     }
-
+    /**
+     *   private List<IncomeDetailModel> convertToList(List<Object[]> list, List<Object[]> list2) {
+        Map<String, List<DetailModel>>map2 =  list2.stream().map(array->{
+            DetailModel detail = new DetailModel();
+            detail.setMoneyChange((BigDecimal) array[1]);
+            detail.setGlobalParentType(((Number) array[2]).intValue());
+            detail.setProductName((String) array[3]);
+            Integer productId = ((Number) array[4]).intValue();
+            detail.setDingqi(productId != 0);
+            detail.setProductId(productId);
+            detail.setDate((String)array[0]);
+            detail.setOrderId(((Number) array[5]).intValue());
+            return detail;
+        }).collect(Collectors.groupingBy(DetailModel::getDate));
+        return  list.stream().map(array->{
+            IncomeDetailModel idModel = new IncomeDetailModel();
+            idModel.setDate((String) array[0]);
+            idModel.setAmount((BigDecimal) array[1]);
+            idModel.setDetailList(map2.get(array[0]));
+            return idModel;
+        }).collect(Collectors.toList());
+    }
+    
+     */
 }

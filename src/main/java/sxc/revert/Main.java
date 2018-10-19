@@ -25,7 +25,7 @@ public class Main {
     private static Pattern mm = Pattern.compile("  `");
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        File file = new File("d://yinglicai.sql");
+        File file = new File("d://netloan.sql");
         byte[] buffer = new byte[(int) file.length()];
 
         List<TableInfo> map = new ArrayList<>();
@@ -81,15 +81,7 @@ public class Main {
         return str;
     }
 
-    /**
-     * 首字母变大写
-     */
-    public static String firstCharToLowCase(String str) {
-        Character firstChar = str.charAt(0);
-        String tail = str.substring(1);
-        str = Character.toLowerCase(firstChar) + tail;
-        return str;
-    }
+   
 
     public static boolean prefix = true;
 

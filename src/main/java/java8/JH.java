@@ -45,12 +45,24 @@ class Bar {
     }
 }
 
+class MyThread extends Thread{
+	
+	@Override
+	public void run() {
+		super.run();
+		System.out.println("1");
+	}
+}
+
 public class JH {
     static List<Person> persons = Arrays.asList(new Person("Max", 18), new Person("Peter", 23),
             new Person("Pamela", 23), new Person("David", 12));
 
     public static void main(String[] args) {
-
+    	Thread s=new Thread(new MyThread());
+    	s.start(); 
+    	
+    	 
         List<Foo> foos2 = IntStream.range(0, 100).mapToObj(i -> (new Foo(i + "A"))).collect(Collectors.toList());
 
         // persons

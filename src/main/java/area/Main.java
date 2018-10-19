@@ -13,7 +13,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         File f = new File("d:\\area.txt");
-        File f2 = new File("d:\\yinglicai.sql");
+        File f2 = new File("d:\\netloan.sql");
         BufferedReader ff = new BufferedReader(new FileReader(f));
         BufferedWriter wReader = new BufferedWriter(new FileWriter(f2));
         String one = "　";

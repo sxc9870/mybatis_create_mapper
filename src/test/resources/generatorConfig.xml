@@ -14,7 +14,7 @@
  -->
  <!-- 这里引入扩展插件 -->
 
-<properties resource="common.properties" />
+<properties resource="common.properties" ></properties>
  <!-- 在MBG工作的时候，需要额外加载的依赖包
      location属性指明加载jar/zip包的全路径
 <classPathEntry location="/Program Files/IBM/SQLLIB/java/db2java.zip" />
@@ -176,7 +176,7 @@
         注意，table里面很多参数都是对javaModelGenerator，context等元素的默认属性的一个复写；
      --> 
      
-    <table tableName="bm_borrower"
+    <table tableName="dj_learn_quest"
      >
         <!-- 参考 javaModelGenerator 的 constructorBased属性-->
         <property name="constructorBased" value="false"/>

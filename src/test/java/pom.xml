@@ -77,7 +77,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     
     
-    <sb.version>1.5.9.RELEASE</sb.version>
+    <sb.version>2.5.12</sb.version>
   </properties>
 
   <dependencies>
